@@ -1,6 +1,9 @@
 # Auto Refresh & Click
 An intuitive, lightweight Chrome extension built to automate page monitoring and button interactions. It executes true browser reloads at customizable intervals, scans for targets, highlights matches visually, plays audio notifications, and runs automated click sequences. Optimized for RaterHub.
 
+<img width="300" height="459" alt="image" src="https://github.com/user-attachments/assets/658d774a-6836-4b3d-9f88-c9473260a935" />
+
+
 ## Features
 
 - **Real Page Reloads:** Performs true browser refreshes (via `chrome.tabs.reload`) rather than background DOM injections. This guarantees that elements load with their associated JavaScript event handlers intact.
