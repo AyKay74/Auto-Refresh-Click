@@ -3,7 +3,7 @@
   "name": "Auto Refresh & Click",
   "version": "1",
   "description": "Periodically reloads the page and auto-clicks a specified button when available.",
-  "permissions": ["storage", "tabs"],
+  "permissions": ["storage", "tabs", "offscreen"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
