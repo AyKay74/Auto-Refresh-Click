@@ -18,6 +18,7 @@
   let pendingTimer = null;
   let audioCtx = null;
   let clickDisabled = false;
+  let sessionStopped = false; // <-- NEW: Tracks temporary halts without killing master storage
 
   function log(...args) {
     console.log('[Auto Refresh & Click]', ...args);
@@ -41,7 +42,6 @@
   function shouldRunOnThisPage() {
     const currentUrl = location.href.toLowerCase();
     
-    // 1. ABSOLUTE SAFEGUARD: Never refresh if the user is working inside a task, checking history, or changing settings
     if (
       currentUrl.includes('/task/show') || 
       currentUrl.includes('/personalized_task_history') || 
@@ -57,13 +57,11 @@
 
     const filterVal = settings.urlFilterValue.trim().toLowerCase();
 
-    // 2. DUAL-INDEX ROUTING: If targeting RaterHub, allow exactly and only the two valid index endpoints
     if (filterVal.includes('/evaluation/rater')) {
       const cleanPath = location.pathname.replace(/\/$/, ""); 
       return cleanPath === '/evaluation/rater' || cleanPath === '/evaluation/rater/task/index';
     }
 
-    // Fallback logic for any other custom filter types
     if (mode === 'exact') {
       try {
         const target = new URL(settings.urlFilterValue, location.href);
@@ -88,7 +86,7 @@
 
     const primaryCandidates = document.querySelectorAll('button, a, input[type="button"], input[type="submit"], [role="button"]');
     for (const el of primaryCandidates) {
-      if (el.classList && el.classList.contains('ext-highlight-marker')) continue; // Skip already highlighted
+      if (el.classList && el.classList.contains('ext-highlight-marker')) continue; 
       const elText = (el.value || el.innerText || el.textContent || '').trim().toLowerCase();
       const isMatch = settings.matchMode === 'exact' ? elText === text : elText.includes(text);
       if (isMatch && isVisible(el)) return el;
@@ -97,21 +95,19 @@
     const secondaryCandidates = document.querySelectorAll('span, div');
     let bestMatch = null;
     for (const el of secondaryCandidates) {
-      if (el.classList && el.classList.contains('ext-highlight-marker')) continue; // Skip already highlighted
+      if (el.classList && el.classList.contains('ext-highlight-marker')) continue; 
       const elText = (el.innerText || el.textContent || '').trim().toLowerCase();
       const isMatch = settings.matchMode === 'exact' ? elText === text : elText.includes(text);
       if (isMatch && isVisible(el)) {
         bestMatch = el;
       }
     }
-    
     return bestMatch;
   }
 
   function highlightExactText(el, textToFind) {
     if (!textToFind || !el) return;
     const lowerTarget = textToFind.toLowerCase();
-    
     const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
     let node;
     
@@ -127,7 +123,7 @@
         node.nodeValue = originalText.substring(0, matchIndex);
         
         const highlightSpan = document.createElement('span');
-        highlightSpan.className = 'ext-highlight-marker'; // Tag it so we ignore it next time
+        highlightSpan.className = 'ext-highlight-marker'; 
         highlightSpan.style.backgroundColor = 'rgba(255, 255, 0, 0.6)';
         highlightSpan.style.color = '#000';
         highlightSpan.style.borderRadius = '2px';
@@ -147,35 +143,43 @@
     }
   }
 
+  // NEW: Bold, 3.5-second smartphone notification synth
   function playChime() {
     if (!settings.soundEnabled) return;
     try {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume();
       const now = audioCtx.currentTime;
-      const notes = [
-        { freq: 784.0, start: 0.0, dur: 0.3 },
-        { freq: 987.77, start: 0.35, dur: 0.3 },
-        { freq: 1174.66, start: 0.7, dur: 0.3 },
-        { freq: 1567.98, start: 1.1, dur: 1.3 },
-      ];
-      
       const volFactor = settings.volume !== undefined ? settings.volume : 0.5;
 
-      notes.forEach((n) => {
+      const tones = [
+        // Strike 1: Crisp attention chime (A5 + E6 harmony)
+        { freq: 880.0,  start: 0.0,  dur: 0.35, peak: 0.22 }, 
+        { freq: 1318.5, start: 0.0,  dur: 0.35, peak: 0.12 }, 
+
+        // Strike 2: Resolves upward, ringing out for 3.2 seconds (C6 + G6 harmony)
+        { freq: 1046.5, start: 0.18, dur: 3.2,  peak: 0.28 },  
+        { freq: 1568.0, start: 0.18, dur: 3.2,  peak: 0.15 }   
+      ];
+
+      tones.forEach((t) => {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = 'sine';
-        osc.frequency.value = n.freq;
+        osc.frequency.setValueAtTime(t.freq, now + t.start);
+        
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        const t0 = now + n.start;
-        const t1 = t0 + n.dur;
+        
+        const t0 = now + t.start;
+        const t1 = t0 + t.dur;
+        
         gain.gain.setValueAtTime(0, t0);
-        gain.gain.linearRampToValueAtTime(0.2 * volFactor, t0 + 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.0001, t1);
+        gain.gain.linearRampToValueAtTime(t.peak * volFactor, t0 + 0.015); // Glass strike attack
+        gain.gain.exponentialRampToValueAtTime(0.0001, t1); // Long reverberant tail
+        
         osc.start(t0);
-        osc.stop(t1 + 0.02);
+        osc.stop(t1 + 0.05);
       });
     } catch (e) {
       log('Sound error', e);
@@ -214,7 +218,6 @@
     try { el.dispatchEvent(new MouseEvent('mousedown', opts)); } catch(e){}
     try { el.dispatchEvent(new MouseEvent('mouseup', opts)); } catch(e){}
     try { el.dispatchEvent(new MouseEvent('click', opts)); } catch(e){}
-    
     try { el.click(); } catch(e){}
 
     if (el.tagName === 'A' && el.href) {
@@ -224,7 +227,7 @@
 
   function checkNowAndScheduleNext() {
     clearPending();
-    if (!settings.enabled || clickDisabled || !shouldRunOnThisPage()) return;
+    if (!settings.enabled || clickDisabled || sessionStopped || !shouldRunOnThisPage()) return;
 
     const el = findTargetElement();
     if (el) {
@@ -232,35 +235,25 @@
       requestFocus();
       playChime();
       
-      try {
-        highlightExactText(el, settings.buttonText);
-      } catch (e) {
-        log('Failed to highlight text', e);
-      }
+      try { highlightExactText(el, settings.buttonText); } catch (e) {}
 
       if (settings.stopOnFound) {
-        log('Target found. Disabling further refreshes.');
-        chrome.storage.local.set({ enabled: false });
-        settings.enabled = false;
+        log('Target found. Halting refresh cycle for this page session.');
+        sessionStopped = true; // Halts timer locally without touching storage!
       }
       
       if (settings.autoClickEnabled !== false) {
-        setTimeout(() => {
-          triggerRobustClick(el);
-        }, 50); 
+        setTimeout(() => { triggerRobustClick(el); }, 50); 
       } else {
-        log('Auto-click is disabled. Pausing monitoring to prevent page navigation.');
         clickDisabled = true;
       }
 
-      if (settings.stopOnFound || clickDisabled) {
-        return; 
-      }
+      if (sessionStopped || clickDisabled) return; 
     }
 
     pendingTimer = setTimeout(() => {
       pendingTimer = null;
-      if (!settings.enabled || clickDisabled || !shouldRunOnThisPage()) return;
+      if (!settings.enabled || clickDisabled || sessionStopped || !shouldRunOnThisPage()) return;
       requestReload(settings.refreshMode === 'hard');
     }, settings.refreshIntervalMs);
   }
@@ -269,12 +262,11 @@
     'click',
     (e) => {
       if (!e.isTrusted) return;
-
       unlockAudio();
       if (!clickDisabled) {
         clickDisabled = true;
         clearPending();
-        log('Genuine user click detected on the page — pausing monitoring.');
+        log('Genuine user click detected — pausing monitoring.');
       }
     },
     true
@@ -291,12 +283,14 @@
         sendResponse({
           baseEnabled: settings.enabled,
           clickDisabled,
-          effectiveEnabled: settings.enabled && !clickDisabled && shouldRunOnThisPage(),
+          sessionStopped,
+          effectiveEnabled: settings.enabled && !clickDisabled && !sessionStopped && shouldRunOnThisPage(),
         });
     }
     if (msg && msg.type === 'SET_ENABLED') {
       settings.enabled = !!msg.value;
       clickDisabled = false;
+      sessionStopped = false;
       clearPending();
       if (settings.enabled && shouldRunOnThisPage()) {
         requestReload(settings.refreshMode === 'hard');
@@ -305,15 +299,10 @@
     }
   });
 
-  function init() {
-    checkNowAndScheduleNext();
-  }
+  function init() { checkNowAndScheduleNext(); }
 
   loadSettings(() => {
-    if (document.body) {
-      init();
-    } else {
-      document.addEventListener('DOMContentLoaded', init, { once: true });
-    }
+    if (document.body) init();
+    else document.addEventListener('DOMContentLoaded', init, { once: true });
   });
 })();
