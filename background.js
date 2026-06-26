@@ -1,8 +1,22 @@
 // background.js
-// Content scripts can't call chrome.tabs / chrome.windows directly,
-// so the content script asks us to focus its tab or reload it.
+
+async function ensureAudioSandbox() {
+  if (await chrome.offscreen.hasDocument()) return;
+  await chrome.offscreen.createDocument({
+    url: 'audio.html',
+    reasons: ['AUDIO_PLAYBACK'],
+    justification: 'Plays task notification chime detached from webpage lifecycle'
+  }).catch(() => {});
+}
 
 chrome.runtime.onMessage.addListener((msg, sender) => {
+  if (msg && msg.type === 'REQUEST_CHIME') {
+    ensureAudioSandbox().then(() => {
+      chrome.runtime.sendMessage({ type: 'PLAY_CHIME', volume: msg.volume });
+    });
+    return;
+  }
+
   if (!sender.tab || sender.tab.id == null) return;
 
   if (msg && msg.type === 'FOCUS_TAB') {
