@@ -5,7 +5,7 @@
 <title>Support Auto Refresh & Click</title>
 <style>
   body {
-    background-color: #f8f9fa;
+    background-color: #f4f6f8;
     font-family: Arial, sans-serif;
     color: #333;
     display: flex;
@@ -15,51 +15,128 @@
     margin: 0;
     padding: 20px;
   }
-  .card {
+  .container {
     background: #ffffff;
-    max-width: 500px;
-    padding: 32px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    max-width: 620px;
+    padding: 36px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
     text-align: center;
     line-height: 1.6;
   }
   h1 { font-size: 22px; margin-top: 0; color: #111; }
-  p { font-size: 15px; color: #555; margin-bottom: 24px; }
-  .donations {
+  .message { font-size: 14.5px; color: #555; margin-bottom: 28px; text-align: left; }
+  
+  /* Symmetrical side-by-side card layout */
+  .options-grid {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .platform-card {
+    flex: 1;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 22px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-top: 24px;
+    justify-content: space-between;
+    text-align: left;
   }
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+  
+  .platform-title {
+    font-weight: bold;
+    font-size: 16px;
+    color: #334155;
+  }
+  
+  /* Discrete preferred tag mirroring the popup style */
+  .preferred-tag {
+    font-size: 11px;
+    color: #888;
+  }
+  
+  .card-desc {
+    font-size: 13px;
+    color: #64748b;
+    margin: 0 0 24px 0;
+    line-height: 1.5;
+  }
+
   .btn {
     display: block;
+    width: 100%;
+    box-sizing: border-box;
     text-decoration: none;
     padding: 12px;
     border-radius: 8px;
     font-weight: bold;
     font-size: 14px;
+    text-align: center;
     transition: transform 0.1s ease, opacity 0.2s ease;
   }
-  .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-  .paypal { background-color: #0070ba; color: #ffffff; }
-  .kofi { background-color: #29abe0; color: #ffffff; }
-  .coffee { background-color: #ffdd00; color: #000000; }
-  .footer { margin-top: 28px; font-size: 12px; color: #999; }
+  .btn:hover { opacity: 0.92; transform: translateY(-1px); }
+  
+  /* Ko-fi: Warm Latte Beige with deep coffee brown text */
+  .kofi { 
+    background-color: #E5D3B3; 
+    color: #2C1D11; 
+  }
+  
+  /* PayPal: Classic Brand Blue */
+  .paypal { 
+    background-color: #0070ba; 
+    color: #ffffff; 
+  }
+  
+  .footer { 
+    margin-top: 32px; 
+    font-size: 12px; 
+    color: #94a3b8; 
+    border-top: 1px solid #f1f5f9; 
+    padding-top: 16px; 
+  }
 </style>
 </head>
 <body>
-  <div class="card">
+  <div class="container">
     <h1>Thank You for Using My Extension! ❤️</h1>
-    <p>
+    <p class="message">
       Hey, I hope you enjoy my extension and find it useful! I will always keep this extension completely free for everyone, no paywalls or premium features. If my extension helped you, a small tip would mean a lot and would help me justify the time I put into creating, publishing and maintaining it.
     </p>
     
-    <div class="donations">
-      <!-- Replace the # in the href attributes below with your actual profile links -->
-      <a href="#" target="_blank" class="btn paypal">Tip via PayPal</a>
-      <a href="#" target="_blank" class="btn kofi">Support on Ko-fi</a>
-      <a href="#" target="_blank" class="btn coffee">Buy Me a Coffee</a>
+    <div class="options-grid">
+      <!-- Option 1: Ko-fi -->
+      <div class="platform-card">
+        <div>
+          <div class="card-header">
+            <span class="platform-title">Ko-fi / Stripe</span>
+            <span class="preferred-tag">(preferred)</span>
+          </div>
+          <p class="card-desc">Fastest checkout. Supports Apple Pay, Google Pay, and standard credit/debit cards with 0% platform fees.</p>
+        </div>
+        <a href="https://www.ko-fi.com/aykay74/donate" target="_blank" class="btn kofi">Support on Ko-fi</a>
+      </div>
+      
+      <!-- Option 2: PayPal -->
+      <div class="platform-card">
+        <div>
+          <div class="card-header">
+            <span class="platform-title">PayPal</span>
+          </div>
+          <p class="card-desc">Trusted alternative. Pay instantly using your existing PayPal balance or a linked bank account.</p>
+        </div>
+        <a href="https://www.paypal.me/andrekulikov05" target="_blank" class="btn paypal">Tip via PayPal</a>
+      </div>
     </div>
 
     <div class="footer">Made with care by AyKay</div>
