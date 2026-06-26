@@ -11,7 +11,7 @@ An intuitive, lightweight Chrome extension built to automate page monitoring and
   - **Full Reload:** Bypasses the cache entirely to ensure fresh content.
 - **Smart Target Detection:** Scans for buttons, anchors, inputs, or standard text elements matching user-defined terms. Supports both exact-string matching and substring containment.
 - **Visual Highlighting:** Wraps discovered target text inside a translucent yellow background node without disrupting the surrounding HTML architecture.
-- **Audio Notifications:** Synthesizes a discrete four-note sound sequence directly through the Web Audio API, requiring no external audio assets. The volume can be adjusted
+- **Audio Notifications:** Get alerted the moment a task appears with a built-in sound engine. You can easily adjust the volume level directly in the extension settings to match your workspace.
 - **Work Protection:** Automatically stops monitoring immediately if a target is found (optional) or if a genuine user click is detected anywhere on the page. This prevents unexpected refresh loops while you are actively working.
 - **RaterHub Optimization:** This extension was made with RaterHub users in mind. It features built-in routing safeguards that automatically block the extension from running on active task windows, settings, and task history views (`/task/show`, `/personalized_task_history`, etc.) to prevent data loss or unwanted page navigation.
 
@@ -36,7 +36,7 @@ Button Text Match Mode:
 
 ## Technical Notes  
 - **Autoplay and Sound Policies**  
-The audio notification engine relies on the Web Audio API. Modern browsers restrict audio generation until a user interacts with the page. To ensure the sound triggers reliably without manual intervention, click the lock icon in the address bar for your target site, go to Site Settings, and change the Sound permission to Allow.
+Modern browsers restrict audio generation until a user interacts with the page. To ensure the sound triggers reliably without manual intervention, click the lock icon in the address bar for your target site, go to Site Settings, and change the Sound permission to Allow.
 
 - **Window and Tab Focus**  
 When a target element matches your criteria, the content script tells the background service worker to bring the active tab to the foreground and request window focus. This provides immediate visibility if the browser is hidden behind other system applications.
