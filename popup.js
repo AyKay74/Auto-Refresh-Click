@@ -64,6 +64,8 @@ function init() {
         if (chrome.runtime.lastError || !resp) return; 
         if (resp.baseEnabled && resp.clickDisabled) {
           els.status.textContent = 'Paused (click detected)';
+        } else if (resp.baseEnabled && resp.sessionStopped) {
+          els.status.textContent = 'Target found (Paused)'; // <-- Tells user it did its job!
         } else if (resp.baseEnabled && !resp.effectiveEnabled) {
           els.status.textContent = 'Enabled (URL filtered)';
         }
