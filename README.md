@@ -31,8 +31,8 @@ Button Text Match Mode:
 - **Run Only On:** Restricts where the extension is allowed to run. Options include matching a specific URL string, exact page matching, or running across any page on the domain.
 
 ## Technical Notes  
-**Autoplay and Sound Policies**  
+- **Autoplay and Sound Policies**  
 The audio notification engine relies on the Web Audio API. Modern browsers restrict audio generation until a user interacts with the page. To ensure the sound triggers reliably without manual intervention, click the lock icon in the address bar for your target site, go to Site Settings, and change the Sound permission to Allow.
 
-**Window and Tab Focus**  
+- **Window and Tab Focus**  
 When a target element matches your criteria, the content script tells the background service worker to bring the active tab to the foreground and request window focus. This provides immediate visibility if the browser is hidden behind other system applications.
