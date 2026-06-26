@@ -16,11 +16,12 @@ An intuitive, lightweight Chrome extension built to automate page monitoring and
 - **RaterHub Optimization:** This extension was made with RaterHub users in mind. It features built-in routing safeguards that automatically block the extension from running on active task windows, settings, and task history views (`/task/show`, `/personalized_task_history`, etc.) to prevent data loss or unwanted page navigation.
 
 ## Installation
-1.  Download or clone this repository to a permanent local directory on your computer.
-2.  Open Google Chrome (or another Chromium browser like Edge or Brave) and navigate to `chrome://extensions`.
-3.  Turn on the Developer mode toggle switch in the upper right corner.
-4.  Click the Load unpacked button located in the top left corner.
-5.  Select the local folder containing these project files.
+1.  Download this repository as a ZIP to a permanent local directory on your computer.
+2.  Extract the folder from the ZIP.
+3.  Open Google Chrome (or another Chromium browser like Edge or Brave) and navigate to `chrome://extensions`.
+4.  Turn on the Developer mode toggle switch in the upper right corner.
+5.  Click the "Load unpacked" button located in the top left corner.
+6.  Select the local folder containing these project files.
 
 ## Settings & Usage
 Click the extension icon in your browser toolbar to open the control panel:
