@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Support Auto Refresh & Click</title>
+<style>
+  body {
+    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+  }
+  .card {
+    background: #ffffff;
+    max-width: 500px;
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    text-align: center;
+    line-height: 1.6;
+  }
+  h1 { font-size: 22px; margin-top: 0; color: #111; }
+  p { font-size: 15px; color: #555; margin-bottom: 24px; }
+  .donations {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .btn {
+    display: block;
+    text-decoration: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    transition: transform 0.1s ease, opacity 0.2s ease;
+  }
+  .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .paypal { background-color: #0070ba; color: #ffffff; }
+  .kofi { background-color: #29abe0; color: #ffffff; }
+  .coffee { background-color: #ffdd00; color: #000000; }
+  .footer { margin-top: 28px; font-size: 12px; color: #999; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Thank You for Using My Extension! ❤️</h1>
+    <p>
+      Hey, I hope you enjoy my extension and find it useful! I will always keep this extension completely free for everyone, no paywalls or premium features. If my extension helped you, a small tip would mean a lot and would help me justify the time I put into creating, publishing and maintaining it.
+    </p>
+    
+    <div class="donations">
+      <!-- Replace the # in the href attributes below with your actual profile links -->
+      <a href="#" target="_blank" class="btn paypal">Tip via PayPal</a>
+      <a href="#" target="_blank" class="btn kofi">Support on Ko-fi</a>
+      <a href="#" target="_blank" class="btn coffee">Buy Me a Coffee</a>
+    </div>
+
+    <div class="footer">Made with care by AyKay</div>
+  </div>
+</body>
+</html>
